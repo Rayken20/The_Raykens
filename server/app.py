@@ -8,7 +8,8 @@ from flask_migrate import Migrate
 from flask_cors import CORS
 from flask_login import LoginManager, login_required, login_user, logout_user, current_user
 from flask_bcrypt import Bcrypt
-from config import cloudconfig
+from server.config import cloudconfig
+# from config import cloudconfig
 cloudconfig
 import cloudinary
 import cloudinary.uploader
@@ -20,7 +21,7 @@ import sys
 
 
 
-from server.config import cloudconfig
+
 # initiate flask app
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key') 
