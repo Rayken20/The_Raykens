@@ -15,7 +15,7 @@ import cloudinary
 import cloudinary.uploader
 from server.models import db, CorruptionReport, CorruptionResolution, User, PublicPetition, PetitionResolution
 from functools import wraps
-from utils import DATABASE_URI
+from server.utils import DATABASE_URI
 import sys
 
 
