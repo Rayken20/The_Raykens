@@ -18,7 +18,7 @@ from utils import DATABASE_URI
 import sys
 
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 
 from server.config import cloudconfig
 # initiate flask app
@@ -29,6 +29,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
 CORS(app)
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 # initiate 3rd party services
 db.init_app(app)
