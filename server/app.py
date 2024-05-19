@@ -15,9 +15,12 @@ import cloudinary.uploader
 from models import db, CorruptionReport, CorruptionResolution, User, PublicPetition, PetitionResolution
 from functools import wraps
 from utils import DATABASE_URI
+import sys
 
 
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
+from server.config import cloudconfig
 # initiate flask app
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key') 
