@@ -13,7 +13,7 @@ from server.config import cloudconfig
 cloudconfig
 import cloudinary
 import cloudinary.uploader
-from models import db, CorruptionReport, CorruptionResolution, User, PublicPetition, PetitionResolution
+from server.models import db, CorruptionReport, CorruptionResolution, User, PublicPetition, PetitionResolution
 from functools import wraps
 from utils import DATABASE_URI
 import sys
