@@ -157,7 +157,7 @@ def admin_dashboard():
 
 ## CorruptionReports Routes
 @app.route('/corruption_reports', methods=['POST'])
-@login_required
+# @login_required
 def create_corruption_report():
     data = request.json
     # Check if a similar report already exists
