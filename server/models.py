@@ -24,16 +24,10 @@ class User(db.Model, UserMixin):
     def __repr__(self) -> str:
         return f"User : {self.fullname}\nEmail : {self.email}\nIdentification No. : {self.id_passport_no}\nRole: {self.role}"
 
-    @property
-    def is_admin(self):
-        if self.role == 'admin':
-            return True
-        else:
-            return False
 
 class PasswordResetToken(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     token = db.Column(db.String(100), nullable=False)
     expiration = db.Column(db.DateTime, nullable=False)
 

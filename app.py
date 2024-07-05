@@ -72,7 +72,6 @@ print(secret_key)
 # Initialize Flask-Migrate
 migrate = Migrate(app, db)
 
-# Routes
 @app.route('/register', methods=['POST'])
 def register():
     """
@@ -96,7 +95,7 @@ def register():
         type: string
         required: true
         description: User's password
-      - name: passport_no
+      - name: id_passport_no
         in: body
         type: integer
         required: true
@@ -119,15 +118,18 @@ def register():
         description: Bad request, invalid input data
     """
     data = request.get_json()
+
+    # Debug: Print the received data
+    print("Received data:", data)
     
     fullname = data.get('fullname')
     email = data.get('email')
     password = data.get('password')
-    passport_no = data.get('id_passport_no')
+    id_passport_no = data.get('id_passport_no')
     role = data.get('role')
 
     # Ensure all fields are provided
-    if not fullname or not email or not password or not passport_no or not role:
+    if not fullname or not email or not password or not id_passport_no or not role:
         return jsonify({'error': 'Missing required fields'}), 400
 
     # Check if email already exists
@@ -136,12 +138,13 @@ def register():
         return jsonify({'error': 'Email is already in use'}), 400
 
     hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
-    new_user = User(fullname=fullname, email=email, password=hashed_password, passport_no=passport_no, role=role)
+    new_user = User(fullname=fullname, email=email, password=hashed_password, id_passport_no=id_passport_no, role=role)
 
     db.session.add(new_user)
     db.session.commit()
 
     return jsonify({'message': 'User registered successfully'}), 201
+
 
 # Login route
 @app.route('/login', methods=['POST'])

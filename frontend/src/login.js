@@ -3,27 +3,21 @@ import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { useNavigate } from 'react-router-dom';
 
-const Register = () => {
+const Login = () => {
   const navigate = useNavigate(); // Access navigate function for navigation
 
   const initialValues = {
-    fullname: '',
     email: '',
-    password: '',
-    id_passport_no: '',
-    role: ''
+    password: ''
   };
 
   const validationSchema = Yup.object({
-    fullname: Yup.string().required('Full name is required'),
     email: Yup.string().email('Invalid email address').required('Email is required'),
-    password: Yup.string().required('Password is required').min(6, 'Password must be at least 6 characters'),
-    id_passport_no: Yup.number().required('Passport number is required').positive('Must be a positive number'),
-    role: Yup.string().required('Role is required')
+    password: Yup.string().required('Password is required')
   });
 
   const onSubmit = (values, { setSubmitting }) => {
-    fetch('http://localhost:5000/register', {
+    fetch('/login', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'
@@ -37,13 +31,17 @@ const Register = () => {
       return response.json();
     })
     .then(data => {
-      alert(data.message); // Show success message (optional)
-      navigate('/login'); // Navigate to login page
+      if (data.token) {
+        alert(data.message); // Show success message (optional)
+        navigate('/home'); // Navigate to homepage
+      } else {
+        alert(data.message); // Show error message (optional)
+      }
       setSubmitting(false);
     })
     .catch(error => {
       console.error('Error:', error);
-      alert('Registration failed. Please try again.');
+      alert('Login failed. Please try again.');
       setSubmitting(false);
     });
   };
@@ -55,10 +53,6 @@ const Register = () => {
       onSubmit={onSubmit}
     >
       <Form>
-        <label htmlFor="fullname">Full Name</label>
-        <Field type="text" id="fullname" name="fullname" />
-        <ErrorMessage name="fullname" component="div" />
-
         <label htmlFor="email">Email Address</label>
         <Field type="email" id="email" name="email" />
         <ErrorMessage name="email" component="div" />
@@ -67,22 +61,10 @@ const Register = () => {
         <Field type="password" id="password" name="password" />
         <ErrorMessage name="password" component="div" />
 
-        <label htmlFor="id_passport_no">Passport Number</label>
-        <Field type="number" id="id_passport_no" name="id_passport_no" />
-        <ErrorMessage name="id_passport_no" component="div" />
-
-        <label htmlFor="role">Role</label>
-        <Field as="select" id="role" name="role">
-          <option value="">Select Role</option>
-          <option value="admin">Admin</option>
-          <option value="user">User</option>
-        </Field>
-        <ErrorMessage name="role" component="div" />
-
-        <button type="submit">Register</button>
+        <button type="submit">Login</button>
       </Form>
     </Formik>
   );
 };
 
-export default Register;
+export default Login;
