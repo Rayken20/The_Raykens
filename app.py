@@ -7,16 +7,21 @@ from flask import Flask, request, make_response, redirect, url_for, abort, jsoni
 from sqlalchemy.exc import IntegrityError
 from flask_migrate import Migrate
 from flask_cors import CORS
-from flask_login import LoginManager, login_required, login_user, logout_user, current_user
+from flask_login import login_required
 from flask_bcrypt import Bcrypt
-
 from server.config import cloudconfig
 cloudconfig
 import cloudinary
 import cloudinary.uploader
-from server.models import db, CorruptionReport, CorruptionResolution, User, PublicPetition, PetitionResolution
+from server.models import db, CorruptionReport, CorruptionResolution, User, PublicPetition, PetitionResolution, PasswordResetToken
 from server.utils import DATABASE_URI
-
+from datetime import datetime, timedelta
+from werkzeug.security import generate_password_hash, check_password_hash
+from flasgger import Swagger
+import random
+import string
+import jwt
+import base64
 # Load environment variables
 load_dotenv()
 
@@ -29,6 +34,11 @@ app.secret_key = os.environ.get('SECRET_KEY', 'default_secret_key')
 app.config['SQLALCHEMY_DATABASE_URI'] = DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.json.compact = False
+app.config['SWAGGER'] = {
+    'title': 'Auth and Cloudinary API docs',
+    'uiversion': 3
+}
+swagger = Swagger(app)
 CORS(app)
 
 # Initiate third-party services
@@ -36,123 +46,232 @@ db.init_app(app)
 migrate = Migrate(app, db)
 bcrypt = Bcrypt(app)
 
-# Initiate flask_login
-login_manager = LoginManager()
-login_manager.init_app(app)
-login_manager.login_view = 'login'
 
 
-
-# decorator to protect admin routes
-def admin_required(func):
-    @wraps(func)
-    def decorated_view(*args, **kwargs):
-        if not current_user.is_admin:
-            abort(403)  # Forbidden
-        return func(*args, **kwargs)
-    return decorated_view
-
-# function to load logged in user
-@login_manager.user_loader
-def load_user(user_id):
-    return User.query.get(int(user_id))
+# api = Api(app)
+# swagger = Swagger(api, title='Auth and Authorization', description='My Flask API Documentation for Auth using JWT and cloudinary upload.')
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+# get postgresql external string from render.
+# app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://authorizationapis_tidn_user:2ojSPuvRhLLJvWhK78HLxVQITPqGhZWE@dpg-coegmp0l5elc73883lk0-a.oregon-postgres.render.com/authorizationapis_tidn'
+# postgresql format 
+# postgresql://username:password@hostname/database_name
 
 
-# user registration route
-@app.route('/user/register', methods=['POST'])
-def user_register():
-    data = request.json
+# cloudinary 
+# Configure Cloudinary
+# raw credentials are too exposed. 
+# generating jwt secret key 
+secret_key = base64.b64encode(os.urandom(24)).decode('utf-8')
+print(secret_key)
 
-    fullname= data.get('fullname')
+
+# Bind the SQLAlchemy instance to the Flask app
+# silence the initialization below for postgresql use it for sqlite. 
+# db.init_app(app)
+
+# Initialize Flask-Migrate
+migrate = Migrate(app, db)
+
+# Routes
+@app.route('/register', methods=['POST'])
+def register():
+    """
+    Register a new user.
+    ---
+    tags:
+      - Authentication
+    parameters:
+      - name: fullname
+        in: body
+        type: string
+        required: true
+        description: User's full name
+      - name: email
+        in: body
+        type: string
+        required: true
+        description: User's email
+      - name: password
+        in: body
+        type: string
+        required: true
+        description: User's password
+      - name: passport_no
+        in: body
+        type: integer
+        required: true
+        description: User's Passport number
+      - name: role
+        in: body
+        type: string
+        required: true
+        description: User's role
+    responses:
+      201:
+        description: User registered successfully
+        schema:
+          type: object
+          properties:
+            message:
+              type: string
+              description: Registration success message
+      400:
+        description: Bad request, invalid input data
+    """
+    data = request.get_json()
+    
+    fullname = data.get('fullname')
     email = data.get('email')
     password = data.get('password')
-    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-    id_passport_no = data.get('id_passport_no')
-    role = 'user'
+    passport_no = data.get('id_passport_no')
+    role = data.get('role')
 
-    # ensure email is unique
+    # Ensure all fields are provided
+    if not fullname or not email or not password or not passport_no or not role:
+        return jsonify({'error': 'Missing required fields'}), 400
+
+    # Check if email already exists
     existing_user = User.query.filter_by(email=email).first()
     if existing_user:
-        return make_response({'error' : 'The email provided is already linked to an existing account. Please try again'}, 400)
+        return jsonify({'error': 'Email is already in use'}), 400
 
-    if fullname and email and hashed_password and id_passport_no and role:
-        new_user = User(fullname=fullname, email=email, password=hashed_password, id_passport_no=id_passport_no, role=role)
-        db.session.add(new_user)
-        db.session.commit()
+    hashed_password = generate_password_hash(password, method='pbkdf2:sha256')
+    new_user = User(fullname=fullname, email=email, password=hashed_password, passport_no=passport_no, role=role)
 
-        return make_response({'message' : 'Registration successful!'}, 201)
+    db.session.add(new_user)
+    db.session.commit()
 
-# admin registration route
-@app.route('/admin/register', methods=['POST'])
-def admin_register():
-    data = request.json
+    return jsonify({'message': 'User registered successfully'}), 201
 
-    fullname= data.get('fullname')
-    email = data.get('email')
-    password = data.get('password')
-    hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-    id_passport_no = data.get('id_passport_no')
-    role = 'admin'
-
-    # ensure email is unique
-    existing_user = User.query.filter_by(email=email).first()
-    if existing_user:
-        return make_response({'error' : 'The email provided is already linked to an existing account. Please try again'}, 400)
-
-    if fullname and email and hashed_password and id_passport_no and role:
-        new_user = User(fullname=fullname, email=email, password=hashed_password, id_passport_no=id_passport_no, role=role)
-        db.session.add(new_user)
-        db.session.commit()
-
-        return make_response({'message' : 'Registration successful!'}, 201)
-
-
-# login view
+# Login route
 @app.route('/login', methods=['POST'])
 def login():
-    data = request.json
-
+    data = request.get_json()
     email = data.get('email')
-    password=data.get('password')
+    password = data.get('password')
 
     user = User.query.filter_by(email=email).first()
 
     if user and bcrypt.check_password_hash(user.password, password):
-        login_user(user)
-        if current_user.is_admin:
-            redirect(url_for('admin_dashboard'))
-            return make_response({'message' : 'Admin logged in successfully!'}, 200)
-        else:
-            redirect(url_for('user_dashboard'))
-        return make_response({'message' : 'User logged in successfully!'}, 200)
+        # Set the expiration time to 1 hour from now
+        expiration_time = datetime.utcnow() + timedelta(hours=1)
+        # Generate the JWT token with the 'exp' claim
+        token = jwt.encode({'user_id': user.id, 'exp': expiration_time}, secret_key, algorithm='HS256')
+        return jsonify({'message': 'Login successful', 'token': token})
     else:
-        return make_response({'error' : 'Password or username incorrect. Please try again.'}, 400)
-
+        return jsonify({'message': 'Invalid email or password'}), 401
     
-# logout view
-@app.route('/logout', methods=['POST'])
-@login_required
-def logout():
-    print(current_user)
-    logout_user()
-    return make_response({'message' : 'User logged out successfully!'}, 200)
+# Helper function to decode the token
+def decode_token(token):
+    try:
+        payload = jwt.decode(token, secret_key, algorithms=['HS256'])
+        return payload
+    except jwt.ExpiredSignatureError:
+        return 'Token has expired. Please log in again.'
+    except jwt.InvalidTokenError:
+        return 'Invalid token. Please log in again.'
 
 
-# user dashboard route
-@app.route('/user_dashboard', methods=['GET'])
-@login_required
-def user_dashboard():
-    return make_response({'message' : 'This is the user dashboard'})
+# Protected route example
+@app.route('/protected', methods=['GET'])
+def protected_route():
+    token = request.headers.get('Authorization')
+
+    if not token:
+        return jsonify({'message': 'Token is missing'}), 401
+
+    token = token.split(' ')[1]  # Extract the token from the 'Authorization' header
+
+    # Decode the token
+    payload = decode_token(token)
+
+    if isinstance(payload, str):
+        return jsonify({'message': payload}), 401
+
+    user_id = payload.get('user_id')
+    
+    # Now you have the user ID, and you can perform further authorization logic
+    # Check if the user has the necessary permissions, etc.
+    # the process 
+    return jsonify({'message': 'Access granted'}), 200
 
 
-# admin dashboard route
-@app.route('/admin_dashboard', methods=['GET'])
-@admin_required
-@login_required
-def admin_dashboard():
-    return make_response({'message' : 'This is the admin dashboard'})
 
-  
+@app.route('/forgot-password', methods=['POST'])
+def forgot_password():
+    data = request.get_json()
+    username = data.get('username')
+
+    user = User.query.filter_by(username=username).first()
+
+    if user:
+        # Generate a random token
+        token = ''.join(random.choices(string.ascii_letters + string.digits, k=20))
+
+        # Set token expiration time (e.g., 1 hour)
+        expiration = datetime.now() + timedelta(hours=1)
+        print(token)
+        print(expiration)
+        # Create a new reset token
+        reset_token = PasswordResetToken(user_id=user.id, token=token, expiration=expiration)
+        db.session.add(reset_token)
+        db.session.commit()
+
+        # In a real application, you would send an email with the reset link containing the token
+
+        return jsonify({'message': 'Password reset token generated successfully'})
+
+    return jsonify({'message': 'User not found'}), 404
+
+@app.route('/reset-password/<token>', methods=['POST'])
+def reset_password(token):
+    data = request.get_json()
+    new_password = data.get('new_password')
+
+    reset_token = PasswordResetToken.query.filter_by(token=token).first()
+
+    if reset_token and reset_token.expiration > datetime.now():
+        user = User.query.filter_by(id=reset_token.user_id).first()
+        hashed_password = generate_password_hash(new_password, method='sha256')
+        user.password = hashed_password
+
+        db.session.delete(reset_token)
+        db.session.commit()
+
+        return jsonify({'message': 'Password reset successful'})
+
+    return jsonify({'message': 'Invalid or expired reset token'}), 400
+
+
+@app.route('/upload-profile-picture/<int:user_id>', methods=['POST'])
+def upload_profile_picture(user_id):
+    # Check if the 'file' key exists in the request.files
+    if 'file' not in request.files:
+        return jsonify({'message': 'No file part'}), 400
+
+    file = request.files['file']
+
+    # Check if a file was uploaded
+    if file.filename == '':
+        return jsonify({'message': 'No selected file'}), 400
+
+    # Upload the image to Cloudinary
+    try:
+        result = cloudinary.uploader.upload(file)
+        image_url = result['secure_url']
+
+        # Retrieve the user
+        user = User.query.get(user_id)
+
+        # Update the user's profile picture URL
+        user.profile_picture = image_url
+
+        db.session.commit()
+
+        return jsonify({'message': 'Profile picture uploaded and updated successfully', 'url': image_url}), 200
+    except Exception as e:
+        return jsonify({'message': f'Error uploading image: {str(e)}'}), 500
+
 
 
 ## CorruptionReports Routes
