@@ -523,7 +523,7 @@ def upload_resolution_file():
     
     try:
         #Upload file to cloudinary
-        result = cloudinary.uploader.upload(file)
+        result =cloudinary.uploader.upload(file)
         return jsonify({'url': result['secure_url']})
     except Exception as e:
         return jsonify({'error':str(e)})
