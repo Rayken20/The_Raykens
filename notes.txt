@@ -1,0 +1,39 @@
+how to create frontend using REACT
+- npx create-react-app frontend
+- cd frontend
+
+## Migrations 
+1. Python -m flask db init
+2. Python -m flask db migrate -m ""
+3. Python -m flask db upgrade
+
+- How to install Postgres in WSL
+ sudo apt update
+ sudo apt install postgresql postgresql-contrib libpq-dev
+
+ Then confirm that Postgres was installed successfully:
+ psql --version
+
+Run this command to start the Postgres service:
+ sudo service postgresql start
+Create a database user so that you are able to connect to the database from Flask. First, check what your operating system username is:
+ whoami
+
+If your username is "Rachael", for example, you'd need to create a Postgres user with that same name. To do so, run this command to open the Postgres CLI:
+ sudo -u postgres -i
+
+From the Postgres CLI, run this command (replacing "ian" with your username):
+
+ createuser -sr Rachael
+Then enter control + d or type logout to exit.
+
+
+when updating a database, drop and create the db again, then run migrations
+
+1. DROP DATABASE ireporter_db_5mko; 
+2. Create DATABASE ireporter_db_5mko; 
+basic postgress commands:
+to open a postgress, run the postgress command from render
+- \l: used to check tables in a database
+- \dt: used to check columns in a tables
+- \q: to quit postgress
