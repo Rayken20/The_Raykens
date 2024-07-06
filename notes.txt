@@ -37,3 +37,4 @@ to open a postgress, run the postgress command from render
 - \l: used to check tables in a database
 - \dt: used to check columns in a tables
 - \q: to quit postgress
+- SELECT * FROM users; To see details of specific column

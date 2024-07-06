@@ -120,7 +120,7 @@ def register():
     data = request.get_json()
 
     # Debug: Print the received data
-    print("Received data:", data)
+    # print("Received data:", data)
     
     fullname = data.get('fullname')
     email = data.get('email')
@@ -155,11 +155,12 @@ def login():
 
     user = User.query.filter_by(email=email).first()
 
-    if user and bcrypt.check_password_hash(user.password, password):
+    if user and check_password_hash(user.password, password):
         # Set the expiration time to 1 hour from now
         expiration_time = datetime.utcnow() + timedelta(hours=1)
         # Generate the JWT token with the 'exp' claim
         token = jwt.encode({'user_id': user.id, 'exp': expiration_time}, secret_key, algorithm='HS256')
+        print(token)
         return jsonify({'message': 'Login successful', 'token': token})
     else:
         return jsonify({'message': 'Invalid email or password'}), 401
