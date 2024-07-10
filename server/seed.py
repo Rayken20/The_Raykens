@@ -1,86 +1,105 @@
-from faker import Faker
-from models import db, CorruptionReport, CorruptionResolution, User, PetitionResolution, PublicPetition
+from app import app  # Import the app and db from app.py
+from models import db, User, PasswordResetToken, CorruptionReport, CorruptionResolution, PublicPetition, PetitionResolution
 from werkzeug.security import generate_password_hash
-from app import app
-from flask_bcrypt import Bcrypt
-bcrypt = Bcrypt(app)
-fake = Faker()
 
-def seed_database():
+def seed_data():
     with app.app_context():
-        # Delete existing data
-        db.session.query(CorruptionResolution).delete()
-        db.session.query(CorruptionReport).delete()
-        db.session.query(PetitionResolution).delete()
-        db.session.query(PublicPetition).delete()
-        db.session.query(User).delete()
+        # Create the database and tables
+        db.create_all()
+
+        # Create users
+        user1 = User(
+            fullname='John Doe',
+            email='john@example.com',
+            password=generate_password_hash('password1'),
+            id_passport_no=123456789,
+            role='user'
+        )
+        
+        user2 = User(
+            fullname='Jane Smith',
+            email='jane@example.com',
+            password=generate_password_hash('password2'),
+            id_passport_no=987654321,
+            role='admin'
+        )
+
+        db.session.add_all([user1, user2])
         db.session.commit()
 
-        users = [
-            User(fullname="Edith Chelangat", email="edith@example.com", password=bcrypt.generate_password_hash("Edit.123").decode('utf-8'), id_passport_no=12345678, role="citizen"),
-            User(fullname="Rachael Njoki", email="rachael@example.com", password=bcrypt.generate_password_hash("@Ra1212049").decode('utf-8'), id_passport_no=23456789, role="admin"),
-            User(fullname="Michelle Nasisiri", email="michelle@example.com", password=bcrypt.generate_password_hash("Michelle.123").decode('utf-8'), id_passport_no=34567890, role="admin"),
-            User(fullname="Victor Muteithia", email="victor@example.com", password=bcrypt.generate_password_hash("Victor.123").decode('utf-8'), id_passport_no=45678901, role="citizen"),
-            User(fullname="Victor Njoroge", email="victor2@example.com", password=bcrypt.generate_password_hash("Victor2.123").decode('utf-8'), id_passport_no=56789012, role="citizen"),
-            User(fullname="Ann Irungu", email="ann@example.com", password=bcrypt.generate_password_hash("Ann.123").decode('utf-8'), id_passport_no=67890123, role="citizen")
-        ]
+        # Create corruption reports
+        report1 = CorruptionReport(
+            govt_agency='Agency A',
+            county='County X',
+            title='Corruption Report 1',
+            description='Description of corruption report 1',
+            user_id=user1.id
+        )
+        
+        report2 = CorruptionReport(
+            govt_agency='Agency B',
+            county='County Y',
+            title='Corruption Report 2',
+            description='Description of corruption report 2',
+            user_id=user2.id
+        )
 
-        db.session.add_all(users)
-        db.session.commit()    
-
-        # Create sample corruption reports
-        for _ in range(10):  # Generate 10 corruption reports
-            report = CorruptionReport(
-                govt_agency=fake.company(),
-                county=fake.city(),
-                title=fake.sentence(),
-                description=fake.paragraph(),
-                user_id=fake.random_element(elements=User.query.all()).id
-            )
-            db.session.add(report)
-
+        db.session.add_all([report1, report2])
         db.session.commit()
 
-        # Create sample corruption resolutions
-        for report in CorruptionReport.query.all():
-            resolution = CorruptionResolution(
-                status=fake.random_element(elements=('Resolved', 'Under Investigation')),
-                justification=fake.sentence(),
-                additional_comments=fake.paragraph(),  
-                record_id=report.id
-            )
-            db.session.add(resolution)
+        # Create public petitions
+        petition1 = PublicPetition(
+            govt_agency='Agency C',
+            county='County Z',
+            title='Public Petition 1',
+            description='Description of public petition 1',
+            user_id=user1.id
+        )
+        
+        petition2 = PublicPetition(
+            govt_agency='Agency D',
+            county='County W',
+            title='Public Petition 2',
+            description='Description of public petition 2',
+            user_id=user2.id
+        )
 
+        db.session.add_all([petition1, petition2])
         db.session.commit()
 
-        # Create sample public petitions
-        for _ in range(5):  # Generate 5 public petitions
-            petition = PublicPetition(
-                govt_agency=fake.company(),
-                county=fake.city(),
-                title=fake.sentence(),
-                description=fake.paragraph(),
-                user_id=fake.random_element(elements=User.query.all()).id
-            )
-            db.session.add(petition)
+        # Create corruption resolutions
+        resolution1 = CorruptionResolution(
+            status='Resolved',
+            justification='Justification for resolution 1',
+            record_id=report1.id
+        )
+        
+        resolution2 = CorruptionResolution(
+            status='Pending',
+            justification='Justification for resolution 2',
+            record_id=report2.id
+        )
 
+        db.session.add_all([resolution1, resolution2])
         db.session.commit()
 
-        # Create sample petition resolutions
-        for petition in PublicPetition.query.all():
-            resolution = PetitionResolution(
-                status=fake.random_element(elements=('Resolved', 'Under Review')),
-                justification=fake.sentence(),
-                additional_comments=fake.paragraph(),  
-                record_id=petition.id
-            )
-            db.session.add(resolution)
+        # Create petition resolutions
+        petition_resolution1 = PetitionResolution(
+            status='Approved',
+            justification='Justification for petition resolution 1',
+            record_id=petition1.id
+        )
+        
+        petition_resolution2 = PetitionResolution(
+            status='Denied',
+            justification='Justification for petition resolution 2',
+            record_id=petition2.id
+        )
 
+        db.session.add_all([petition_resolution1, petition_resolution2])
         db.session.commit()
-        print("Done seeding!")
+
+        print("Database seeded successfully!")
 
 if __name__ == '__main__':
-    with app.app_context():
-        seed_database()
-
-
+    seed_data()

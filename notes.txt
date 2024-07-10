@@ -1,6 +1,8 @@
 how to create frontend using REACT
 - npx create-react-app frontend
 - cd frontend
+## install requirements.txt
+- pip install -r requirements.txt
 
 ## Migrations 
 1. Python -m flask db init

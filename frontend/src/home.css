@@ -1,0 +1,8 @@
+.main-photo {
+    width: calc(100% - 20px); /* Full width minus margin */
+    margin: 10px; /* Small margin around the image */
+    display: block;
+    max-height: 400px; /* Set the maximum height */
+    object-fit: cover; /* Cover the area, cropping if necessary */
+  }
+  
