@@ -79,9 +79,9 @@ const Login = () => {
             <div className="card-body">
               {showForgotPassword ? (
                 <Formik
-                  initialValues={{ email: '' }} // Changed to email
+                  initialValues={{ email: '' }}
                   validationSchema={Yup.object({
-                    email: Yup.string().email('Invalid email address').required('Email is required') // Changed to email
+                    email: Yup.string().email('Invalid email address').required('Email is required')
                   })}
                   onSubmit={handleForgotPasswordSubmit}
                 >
