@@ -1,6 +1,9 @@
 import React from 'react';
 import { Carousel } from 'react-bootstrap';
 import './home.css';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faFacebookSquare, faTwitterSquare, faInstagramSquare, faLinkedin } from '@fortawesome/free-brands-svg-icons';
+
 
 const Home = () => {
   const images = [
@@ -34,7 +37,7 @@ const Home = () => {
   ];
 
   return (
-    <>      
+    <>
       <div className="container mt-5">
         <div className="row mb-4">
           <div className="col-12">
@@ -124,6 +127,40 @@ const Home = () => {
             </iframe>
           </div>
         </div>
+
+        {/* Footer */}
+        <footer className="footer">
+          <div className="container">
+            <div className="row">
+              <div className="col-md-6">
+                <h5>Contact Us</h5>
+                <ul className="list-unstyled">
+                  <li>
+                  <FontAwesomeIcon icon={faFacebookSquare} /> <span>Facebook</span>
+                  </li>
+                  <li>
+                  <FontAwesomeIcon icon={faTwitterSquare} /> <span>X</span>
+                  </li>
+                  <li>
+                  <FontAwesomeIcon icon={faInstagramSquare} /> <span>Instagram</span>
+                  </li>
+                  <li>
+                  <FontAwesomeIcon icon={faLinkedin} /> <span>LinkedIn</span>
+                  </li>
+                </ul>
+              </div>
+              <div className="col-md-6">
+                <h5>Address</h5>
+                <address>
+                  123 Hotel Road, <br />
+                  Suite 101, <br />
+                  City, Country <br />
+                  Zip Code: 12345
+                </address>
+              </div>
+            </div>
+          </div>
+        </footer>
       </div>
     </>
   );
