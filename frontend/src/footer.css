@@ -1,0 +1,19 @@
+/* footer.css */
+.footer {
+    background-color: #343a40;
+    color: white;
+    padding: 20px 0;
+  }
+  
+  .footer h5 {
+    color: white;
+  }
+  
+  .footer ul li span {
+    margin-left: 8px;
+  }
+  
+  .footer address {
+    color: white;
+  }
+  

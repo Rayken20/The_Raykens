@@ -1,9 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Carousel } from 'react-bootstrap';
-import './home.css';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faFacebookSquare, faTwitterSquare, faInstagramSquare, faLinkedin } from '@fortawesome/free-brands-svg-icons';
-
+import Footer from './footer'; 
+import './home.css'; 
 
 const Home = () => {
   const images = [
@@ -32,12 +30,28 @@ const Home = () => {
     {
       title: 'Presidential Suite',
       description: 'Experience the ultimate in luxury with our Presidential Suite, featuring a private pool and exclusive amenities for a memorable stay.',
-      imageUrl: 'https://images.unsplash.com/photo-1544161515-4ab6ce6db874?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTR8fHNwYXxlbnwwfHwwfHx8MA%3D%3D/300x200'
+      imageUrl: 'https://images.unsplash.com/photo-1445342358666-0142151ad26f?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MjB8fFByZXNpZGVudGlhbCUyMFN1aXRlJTIwVWx0aW1hdGUlMjBsdXh1cnklMjBzdWl0ZSUyMHdpdGglMjBhJTIwcHJpdmF0ZSUyMHBvb2wlMjBhbmQlMjBleGNsdXNpdmUlMjBhbWVuaXRpZXMufGVufDB8fDB8fHww/300x200'
     }
   ];
 
+  const [currentPage, setCurrentPage] = useState(0); // State to track current page
+
+  // Function to handle next page
+  const handleNextPage = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  // Function to handle previous page
+  const handlePrevPage = () => {
+    setCurrentPage((prevPage) => prevPage - 1);
+  };
+
+  // Calculate start and end index based on currentPage
+  const startIndex = currentPage * 2;
+  const endIndex = startIndex + 2;
+
   return (
-    <>
+    <>      
       <div className="container mt-5">
         <div className="row mb-4">
           <div className="col-12">
@@ -54,6 +68,7 @@ const Home = () => {
         <div className="row mb-4">
           <div className="col-12 text-center">
             <h2 style={{ color: '#B87333' }}>The Raykens</h2>
+            <h3 style={{ color: '#B87333' }}>About</h3>
             <p style={{ color: 'grey', fontWeight: 'bold' }}>
               The Raykens was conceived from a simple belief: that we coexist on a single planet and there is only one Tribe that matters… humankind.
               The interdependence of today’s societies and the speed at which networks are being built, make it increasingly apparent that unity is the foundation of a dignified, sophisticated and prosperous world community. 
@@ -62,65 +77,14 @@ const Home = () => {
           </div>
         </div>
 
-        <div className="row">
-          {cardData.map((card, index) => (
-            <div key={index} className="col-md-12 mb-4">
-              <div className="card h-100">
-                <div className="row no-gutters">
-                  {index % 2 === 0 ? (
-                    <>
-                      <div className="col-md-6">
-                        <img src={card.imageUrl} className="card-img" alt={card.title} />
-                      </div>
-                      <div className="col-md-6">
-                        <div className="card-body">
-                          <h5 className="card-title">{card.title}</h5>
-                          <p className="card-text">{card.description}</p>
-                        </div>
-                        <div className="card-footer">
-                          <button className="btn btn-primary">Book Now</button>
-                        </div>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="col-md-6 order-md-2">
-                        <img src={card.imageUrl} className="card-img" alt={card.title} />
-                      </div>
-                      <div className="col-md-6 order-md-1">
-                        <div className="card-body">
-                          <h5 className="card-title">{card.title}</h5>
-                          <p className="card-text">{card.description}</p>
-                        </div>
-                        <div className="card-footer">
-                          <button className="btn btn-primary">Book Now</button>
-                        </div>
-                      </div>
-                    </>
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="row mb-4">
-          <div className="col-12 text-center">
-            <h2 style={{ color: '#B87333' }}>Pure Greatness</h2>
-            <p style={{ color: 'grey', fontWeight: 'bold' }}>
-              From the hotel’s inspired architecture and interiors to the staff’s singular focus on exemplary service, a common vision pervades: 
-              the unity of form and function celebrated within the diversity of cultures, styles and materials.
-            </p>
-          </div>
-        </div>
-
+        {/* YouTube Video Trailer */}
         <div className="row mb-4">
           <div className="col-12 text-center">
             <iframe 
-              width="100%" 
-              height="400" 
-              src="https://www.youtube.com/embed/qemqQHaeCYo?si=TF3cMNqTahLmLp8A" 
-              title="Hotel Trailer" 
+              width="560" 
+              height="315" 
+              src="https://www.youtube.com/embed/ScMzIvxBSi4" 
+              title="YouTube video player" 
               frameBorder="0" 
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
               allowFullScreen>
@@ -128,40 +92,48 @@ const Home = () => {
           </div>
         </div>
 
-        {/* Footer */}
-        <footer className="footer">
-          <div className="container">
-            <div className="row">
-              <div className="col-md-6">
-                <h5>Contact Us</h5>
-                <ul className="list-unstyled">
-                  <li>
-                  <FontAwesomeIcon icon={faFacebookSquare} /> <span>Facebook</span>
-                  </li>
-                  <li>
-                  <FontAwesomeIcon icon={faTwitterSquare} /> <span>X</span>
-                  </li>
-                  <li>
-                  <FontAwesomeIcon icon={faInstagramSquare} /> <span>Instagram</span>
-                  </li>
-                  <li>
-                  <FontAwesomeIcon icon={faLinkedin} /> <span>LinkedIn</span>
-                  </li>
-                </ul>
+        {cardData.slice(startIndex, endIndex).map((card, index) => (
+          <div key={index} className={`row mb-4 ${index % 2 === 0 ? '' : 'flex-row-reverse'}`}>
+            <div className="col-md-6">
+              <div className="card h-100">
+                <img src={card.imageUrl} className="card-img-top" alt={card.title} />
               </div>
-              <div className="col-md-6">
-                <h5>Address</h5>
-                <address>
-                  123 Hotel Road, <br />
-                  Suite 101, <br />
-                  City, Country <br />
-                  Zip Code: 12345
-                </address>
+            </div>
+            <div className="col-md-6">
+              <div className="card h-100">
+                <div className="card-body">
+                  <h5 className="card-title">{card.title}</h5>
+                  <p className="card-text">{card.description}</p>
+                  <button className="btn btn-primary">Book Now</button>
+                </div>
               </div>
             </div>
           </div>
-        </footer>
+        ))}
+
+        {/* Pagination controls */}
+        <div className="row mb-4">
+          <div className="col-12 d-flex justify-content-center">
+            <button 
+              className="btn btn-secondary" 
+              onClick={handlePrevPage} 
+              disabled={currentPage === 0}
+            >
+              Previous
+            </button>
+            <button 
+              className="btn btn-secondary ml-2" 
+              onClick={handleNextPage} 
+              disabled={endIndex >= cardData.length}
+            >
+              Next
+            </button>
+          </div>
+        </div>
       </div>
+      
+      {/*Footer Component */}
+      <Footer />
     </>
   );
 };

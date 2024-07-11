@@ -8,7 +8,6 @@ import Hotels from './hotels';
 import Meetings from './meetings';
 import Spa from './spa';
 import About from './about';
-import Contact from './contact';
 import Navbar from './navbar';
 
 function App() {
@@ -24,8 +23,7 @@ function App() {
           <Route path="/hotels" element={<Hotels />} />
           <Route path="/meetings" element={<Meetings />} />
           <Route path="/spa" element={<Spa />} />
-          <Route path="/about" element={<About />} />
-          <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} />         
         </Routes>
       </div>
     </Router>
