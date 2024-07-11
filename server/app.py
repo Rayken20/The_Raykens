@@ -130,7 +130,7 @@ def register():
 
     # Ensure all fields are provided
     if not fullname or not email or not password or not id_passport_no or not role:
-        return jsonify({'error': 'Missing required fields'}), 400
+        return jsonify({'error': 'Missing one of the required fields'}), 400
 
     # Check if email already exists
     existing_user = User.query.filter_by(email=email).first()
