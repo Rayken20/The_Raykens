@@ -67,8 +67,7 @@ const Home = () => {
 
         <div className="row mb-4">
           <div className="col-12 text-center">
-            <h2 style={{ color: '#B87333' }}>The Raykens</h2>
-            <h3 style={{ color: '#B87333' }}>About</h3>
+            <h2 style={{ color: '#B87333' }}>About</h2>            
             <p style={{ color: 'grey', fontWeight: 'bold' }}>
               The Raykens was conceived from a simple belief: that we coexist on a single planet and there is only one Tribe that matters… humankind.
               The interdependence of today’s societies and the speed at which networks are being built, make it increasingly apparent that unity is the foundation of a dignified, sophisticated and prosperous world community. 
@@ -77,20 +76,6 @@ const Home = () => {
           </div>
         </div>
 
-        {/* YouTube Video Trailer */}
-        <div className="row mb-4">
-          <div className="col-12 text-center">
-            <iframe 
-              width="560" 
-              height="315" 
-              src="https://www.youtube.com/embed/ScMzIvxBSi4" 
-              title="YouTube video player" 
-              frameBorder="0" 
-              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
-              allowFullScreen>
-            </iframe>
-          </div>
-        </div>
 
         {cardData.slice(startIndex, endIndex).map((card, index) => (
           <div key={index} className={`row mb-4 ${index % 2 === 0 ? '' : 'flex-row-reverse'}`}>
@@ -131,7 +116,20 @@ const Home = () => {
           </div>
         </div>
       </div>
-      
+              {/* YouTube Video Trailer */}
+      <div className="row mb-4">
+          <div className="col-12 text-center">
+            <iframe 
+              width="560" 
+              height="315" 
+              src="https://www.youtube.com/embed/ScMzIvxBSi4" 
+              title="YouTube video player" 
+              frameBorder="0" 
+              allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+              allowFullScreen>
+            </iframe>
+          </div>
+      </div>
       {/*Footer Component */}
       <Footer />
     </>
