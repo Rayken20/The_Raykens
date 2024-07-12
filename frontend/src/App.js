@@ -9,6 +9,7 @@ import Meetings from './meetings';
 import Spa from './spa';
 import About from './about';
 import Navbar from './navbar';
+import Meal from './meal'; // Import the Meal component
 
 function App() {
   return (
@@ -23,7 +24,8 @@ function App() {
           <Route path="/hotels" element={<Hotels />} />
           <Route path="/meetings" element={<Meetings />} />
           <Route path="/spa" element={<Spa />} />
-          <Route path="/about" element={<About />} />         
+          <Route path="/about" element={<About />} /> 
+          <Route path="/meal" element={<Meal />} /> {/* Add the Meal route */}
         </Routes>
       </div>
     </Router>

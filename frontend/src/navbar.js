@@ -57,6 +57,9 @@ const Navbar = () => {
               <a className="nav-link" href="/#footer" onClick={handleContactClick} style={{ color: 'white' }}>Contact</a>
             </li>
             <li className="nav-item">
+              <Link className="nav-link" to="/meal" style={{ color: 'white' }}>Meal</Link> {/* Add Meal link */}
+            </li>
+            <li className="nav-item">
               <Link className="nav-link" to="/login" style={{ color: 'white' }}>Login</Link>
             </li>
             <li className="nav-item">
