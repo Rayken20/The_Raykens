@@ -34,7 +34,7 @@ const Home = () => {
     }
   ];
 
-  const [currentPage, setCurrentPage] = useState(0); // State to track current page
+  const [currentPage, setCurrentPage] = useState(0); 
 
   // Function to handle next page
   const handleNextPage = () => {
@@ -122,7 +122,7 @@ const Home = () => {
             <iframe 
               width="560" 
               height="315" 
-              src="https://www.youtube.com/embed/ScMzIvxBSi4" 
+              src="https://www.youtube.com/embed/UJEUwEJ6gH4" 
               title="YouTube video player" 
               frameBorder="0" 
               allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 

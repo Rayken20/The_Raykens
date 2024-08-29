@@ -42,7 +42,7 @@ const Navbar = () => {
               <Link className="nav-link" to="/" style={{ color: 'white' }}>Home</Link>
             </li>
             <li className="nav-item">
-              <Link className="nav-link" to="/hotels" style={{ color: 'white' }}>Hotels</Link>
+              <Link className="nav-link" to="/travel" style={{ color: 'white' }}>Travel</Link>
             </li>
             <li className="nav-item">
               <Link className="nav-link" to="/meetings" style={{ color: 'white' }}>Meetings and Events</Link>
